@@ -53,6 +53,7 @@ export class MyApp {
       this.splashScreen.hide();
     });
     this.initTranslate();
+    console.log(this.rootPage);
   }
 
   initTranslate() {

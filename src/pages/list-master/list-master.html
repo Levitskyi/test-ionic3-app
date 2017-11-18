@@ -13,17 +13,23 @@
 </ion-header>
 
 <ion-content>
+  <pre>{{messages | json}}</pre>
 
-  <ion-list>
-    <ion-item-sliding *ngFor="let item of currentItems">
-      <button ion-item (click)="openItem(item)">
+  <ion-list *ngIf="pricesList">
+    <ion-item-sliding *ngFor="let item of coinItems">
+      <ion-item ion-item (click)="openItem(item)">
         <ion-avatar item-start>
-          <img [src]="item.profilePic" />
+          <img [src]="baseImageUrl + item.ImageUrl" />
         </ion-avatar>
-        <h2>{{item.name}}</h2>
-        <p>{{item.about}}</p>
-        <ion-note item-end *ngIf="item.note">{{item.note}}</ion-note>
-      </button>
+        <h2>{{item.Name}}</h2>
+        <p>{{item.FullName}}</p>
+        <ion-note item-end class="ion-note-styled">
+          <p>{{showPrice(item.Symbol)}}</p>
+          <p class="note-gather" [ngClass]="{'up': getChange(item.Symbol) > 0, 'down': getChange(item.Symbol) < 0}">
+            {{getChange(item.Symbol) + '%'}}
+          </p>
+        </ion-note>
+      </ion-item>
 
       <ion-item-options>
         <button ion-button color="danger" (click)="deleteItem(item)">
