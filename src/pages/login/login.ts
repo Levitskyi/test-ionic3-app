@@ -1,56 +1,50 @@
 import { Component } from '@angular/core';
-
-import { NavController, LoadingController } from 'ionic-angular';
-
-import { TabsPage } from '../tabs/tabs';
-import { SignupPage } from '../signup/signup';
-import { ConfirmPage } from '../confirm/confirm';
+import { TranslateService } from '@ngx-translate/core';
+import { IonicPage, NavController, ToastController } from 'ionic-angular';
 
 import { User } from '../../providers/providers';
+import { MainPage } from '../pages';
 
-export class LoginDetails {
-  username: string;
-  password: string;
-}
-
+@IonicPage()
 @Component({
   selector: 'page-login',
   templateUrl: 'login.html'
 })
 export class LoginPage {
-  
-  public loginDetails: LoginDetails;
+  // The account fields for the login form.
+  // If you're using the username field with or without email, make
+  // sure to add it to the type
+  account: { email: string, password: string } = {
+    email: 'test@example.com',
+    password: 'test'
+  };
+
+  // Our translated text strings
+  private loginErrorString: string;
 
   constructor(public navCtrl: NavController,
-              public user: User,
-              public loadingCtrl: LoadingController) {
-    this.loginDetails = new LoginDetails(); 
+    public user: User,
+    public toastCtrl: ToastController,
+    public translateService: TranslateService) {
+
+    this.translateService.get('LOGIN_ERROR').subscribe((value) => {
+      this.loginErrorString = value;
+    })
   }
 
-  login() {
-    let loading = this.loadingCtrl.create({
-      content: 'Please wait...'
-    });
-    loading.present();
-
-    let details = this.loginDetails;
-    console.log('login..');
-    this.user.login(details.username, details.password).then((result) => {
-      console.log('result:', result);
-      loading.dismiss();
-      this.navCtrl.setRoot(TabsPage);
-    }).catch((err) => { 
-      if (err.message === "User is not confirmed.") {
-        loading.dismiss();
-        this.navCtrl.push(ConfirmPage, { 'username': details.username });
-      }
-      console.log('errrror', err);
-      loading.dismiss();
+  // Attempt to login in through our User service
+  doLogin() {
+    this.user.login(this.account).subscribe((resp) => {
+      this.navCtrl.push(MainPage);
+    }, (err) => {
+      this.navCtrl.push(MainPage);
+      // Unable to log in
+      let toast = this.toastCtrl.create({
+        message: this.loginErrorString,
+        duration: 3000,
+        position: 'top'
+      });
+      toast.present();
     });
   }
-
-  signup() {
-    this.navCtrl.push(SignupPage);
-  }
-
 }

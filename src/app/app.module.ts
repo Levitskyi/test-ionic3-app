@@ -1,69 +1,72 @@
-import { NgModule, ErrorHandler } from '@angular/core';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { ErrorHandler, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
-
 import { Camera } from '@ionic-native/camera';
-
-import { MyApp } from './app.component';
-import { LoginPage } from '../pages/login/login';
-import { SignupPage } from '../pages/signup/signup';
-import { ConfirmPage } from '../pages/confirm/confirm';
-import { SettingsPage } from '../pages/settings/settings';
-import { AboutPage } from '../pages/about/about';
-import { AccountPage } from '../pages/account/account';
-import { TabsPage } from '../pages/tabs/tabs';
-import { TasksPage } from '../pages/tasks/tasks';
-import { TasksCreatePage } from '../pages/tasks-create/tasks-create';
-
-import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
+import { StatusBar } from '@ionic-native/status-bar';
+import { IonicStorageModule, Storage } from '@ionic/storage';
+import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
+import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 
-import { User } from '../providers/user';
-import { Cognito } from '../providers/aws.cognito';
-import { DynamoDB } from '../providers/aws.dynamodb';
+import { Items } from '../mocks/providers/items';
+import { Settings } from '../providers/providers';
+import { User } from '../providers/providers';
+import { Api } from '../providers/providers';
+import { MyApp } from './app.component';
 
+// The translate loader needs to know where to load i18n files
+// in Ionic's static asset pipeline.
+export function createTranslateLoader(http: HttpClient) {
+  return new TranslateHttpLoader(http, './assets/i18n/', '.json');
+}
+
+export function provideSettings(storage: Storage) {
+  /**
+   * The Settings provider takes a set of default settings for your app.
+   *
+   * You can add new settings options at any time. Once the settings are saved,
+   * these values will not overwrite the saved values (this can be done manually if desired).
+   */
+  return new Settings(storage, {
+    option1: true,
+    option2: 'Ionitron J. Framework',
+    option3: '3',
+    option4: 'Hello'
+  });
+}
 
 @NgModule({
   declarations: [
-    MyApp,
-    LoginPage,
-    SignupPage,
-    ConfirmPage,
-    SettingsPage,
-    AboutPage,
-    AccountPage,
-    TabsPage,
-    TasksPage,
-    TasksCreatePage
+    MyApp
   ],
   imports: [
     BrowserModule,
-    IonicModule.forRoot(MyApp)
+    HttpClientModule,
+    TranslateModule.forRoot({
+      loader: {
+        provide: TranslateLoader,
+        useFactory: (createTranslateLoader),
+        deps: [HttpClient]
+      }
+    }),
+    IonicModule.forRoot(MyApp),
+    IonicStorageModule.forRoot()
   ],
   bootstrap: [IonicApp],
   entryComponents: [
-    MyApp,
-    LoginPage,
-    SignupPage,
-    ConfirmPage,
-    SettingsPage,
-    AboutPage,
-    AccountPage,
-    TabsPage,
-    TasksPage,
-    TasksCreatePage
+    MyApp
   ],
   providers: [
-    StatusBar,
-    SplashScreen,
-    {provide: ErrorHandler, useClass: IonicErrorHandler},
-    Camera,
+    Api,
+    Items,
     User,
-    Cognito,
-    DynamoDB
+    Camera,
+    SplashScreen,
+    StatusBar,
+    { provide: Settings, useFactory: provideSettings, deps: [Storage] },
+    // Keep this to enable Ionic's runtime error handling during development
+    { provide: ErrorHandler, useClass: IonicErrorHandler }
   ]
 })
-export class AppModule {}
-
-declare var AWS;
-AWS.config.customUserAgent = AWS.config.customUserAgent + ' Ionic';
+export class AppModule { }

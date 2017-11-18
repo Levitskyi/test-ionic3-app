@@ -1,117 +1,96 @@
-# Ionic AWS Starter
+# The Ionic Super Starter 🎮
 
-This Ionic starter comes with a pre-configured [AWS Mobile Hub](https://aws.amazon.com/mobile/) project set up to use Amazon DynamoDB, S3, Pinpoint, and Cognito.
+<img src="https://user-images.githubusercontent.com/236501/32385619-bddac0ac-c08c-11e7-9ee4-9c892197191f.png" width="400" />
 
-## Using the Starter
+The Ionic Super Starter is a batteries-included starter project for Ionic apps
+complete with pre-built pages, providers, and best practices for Ionic
+development.
 
-### Installing Ionic CLI 3.0
+The goal of the Super Starter is to get you from zero to app store faster than
+before, with a set of opinions from the Ionic team around page layout,
+data/user management, and project structure.
 
-This starter project requires Ionic CLI 3.0, to install, run
+The way to use this starter is to pick and choose the various page types you
+want use, and remove the ones you don't. If you want a blank slate, this
+starter isn't for you (use the `blank` type instead).
 
-```bash
-npm install -g ionic@latest
-```
+One of the big advances in Ionic was moving from a rigid route-based navigation
+system to a flexible push/pop navigation system modeled off common native SDKs.
+We've embraced this pattern to provide a set of reusable pages that can be
+navigated to anywhere in the app. Take a look at the [Settings
+page](https://github.com/ionic-team/starters/blob/master/ionic-angular/official/super/src/pages/settings/settings.html)
+for a cool example of a page navigating to itself to provide a different UI
+without duplicating code.
 
-Make sure to add `sudo` on Mac and Linux. If you encounter issues installing the Ionic 3 CLI, uninstall the old one using `npm uninstall -g ionic` first.
+## Table of Contents
 
-### Installing AWS CLI
+1. [Getting Started](#getting-started)
+2. [Pages](#pages)
+3. [Providers](#providers)
+4. [i18n](#i18n) (adding languages)
 
-To install the AWS CLI, first ensure your pip installation is up to date:
+## <a name="getting-started"></a>Getting Started
 
-```
-pip install --upgrade pip
-```
-
-Next, install the AWS CLI:
-
-```
-pip install awscli
-```
-
-Note: add `sudo` to the above commands on Mac and Linux.
-
-### Creating the Ionic Project
-
-To create a new Ionic project using this AWS Mobile Hub starter, run
-
-```bash
-ionic start myApp aws
-```
-
-Which will create a new app in `./myApp`.
-
-Once the app is created, `cd` into it:
+To test this starter out, install the latest version of the Ionic CLI and run:
 
 ```bash
-cd myApp
+ionic start mySuperApp super
 ```
 
-Proceed to the next steps on importing the auto-generated AWS Mobile Hub project.
+## Pages
 
-### Creating AWS Mobile Hub Project
+The Super Starter comes with a variety of ready-made pages. These pages help
+you assemble common building blocks for your app so you can focus on your
+unique features and branding.
 
-Visit the [AWS Mobile Hub](https://aws.amazon.com/mobile/) and enter the Mobile Hub Console.
+The app loads with the `FirstRunPage` set to `TutorialPage` as the default. If
+the user has already gone through this page once, it will be skipped the next
+time they load the app.
 
-In the Mobile Hub dashboard, click the "Import your project" button. Next, find the `mobile-hub-project.zip` included
-in this starter project, and drag and drop it to the import modal. Set the name of the project, and then click "Import project."
+If the tutorial is skipped but the user hasn't logged in yet, the Welcome page
+will be displayed which is a "splash" prompting the user to log in or create an
+account.
 
-Once the project is imported, you'll be directed to the dashboard for this Mobile Hub project. To continue configuring the app, you'll need to find the name of the Amazon S3 bucket auto generated through the App Content Delivery system. To do this, click the "Resources" button on the left side of the Mobile Hub project dashboard, find the "Amazon S3 Buckets" card, and then copy the bucket name that contains `hosting-mobilehub`.
+Once the user is authenticated, the app will load with the `MainPage` which is
+set to be the `TabsPage` as the default.
 
-Next, assuming your terminal is still open inside of the `myApp` folder, run:
+The entry and main pages can be configured easily by updating the corresponding
+variables in
+[src/pages/pages.ts](https://github.com/ionic-team/starters/blob/master/ionic-angular/official/super/src/pages/pages.ts).
 
-```bash
-aws s3 cp s3://BUCKET_NAME/aws-config.js src/assets
-```
+Please read the
+[Pages](https://github.com/ionic-team/starters/tree/master/ionic-angular/official/super/src/pages)
+readme, and the readme for each page in the source for more documentation on
+each.
 
-Replacing `BUCKET_NAME` with the full name of the S3 bucket found above. This will copy the auto-generated `aws-config.js` file into the `src/assets` folder in your Ionic app, which pre-configures all your AWS settings automatically.
+## Providers
 
-### Enabling file uploads
+The Super Starter comes with some basic implementations of common providers.
 
-The Account page has an example of taking a photo or uploading a file to the `userfiles` S3 bucket. To enable uploads from the web, make sure to edit the CORS Policy for the S3 bucket by opening the bucket with `userfiles` in it from the Resources tab in the Mobile Hub.
+### User
 
-A working, albeit liberal CORS configuration looks like
+The `User` provider is used to authenticate users through its
+`login(accountInfo)` and `signup(accountInfo)` methods, which perform `POST`
+requests to an API endpoint that you will need to configure.
 
-```xml
-<!-- Sample policy -->
-<CORSConfiguration>
-	<CORSRule>
-		<AllowedOrigin>*</AllowedOrigin>
-		<AllowedMethod>GET</AllowedMethod>
-		<AllowedMethod>POST</AllowedMethod>
-		<AllowedMethod>PUT</AllowedMethod>
-		<AllowedHeader>*</AllowedHeader>
-	</CORSRule>
-</CORSConfiguration>
-```
+### Api
 
-### Running the app
+The `Api` provider is a simple CRUD frontend to an API. Simply put the root of
+your API url in the Api class and call get/post/put/patch/delete 
 
-Now the app is configured and wired up to the AWS Mobile Hub and AWS services. To run the app in the browser, run
+## i18n
 
-```bash
-ionic serve
-```
+Ionic Super Starter comes with internationalization (i18n) out of the box with
+[ngx-translate](https://github.com/ngx-translate/core). This makes it easy to
+change the text used in the app by modifying only one file. 
 
-To run the app on device, first add a platform, and then run it:
+### Adding Languages
 
-```bash
-ionic cordova platform add ios
-ionic cordova run ios
-```
+To add new languages, add new files to the `src/assets/i18n` directory,
+following the pattern of LANGCODE.json where LANGCODE is the language/locale
+code (ex: en/gb/de/es/etc.).
 
-Or open the platform-specific project in the relevant IDE:
+### Changing the Language
 
-```bash
-open platforms/ios/MyApp.xcodeproj
-```
-
-### Hosting app on Amazon S3
-
-Since your Ionic app is just a web app, it can be hosted as a static website in an Amazon S3 bucket. To do this, copy the web assets to the S3 bucket:
-
-```
-npm run build
-aws s3 cp --recursive ./www s3://WEBSITE_BUCKET
-```
-
-Where `WEBSITE_BUCKET` is an S3 bucket configured with static hosting.
+To change the language of the app, edit `src/app/app.component.ts` and modify
+`translate.use('en')` to use the LANGCODE from `src/assets/i18n/`

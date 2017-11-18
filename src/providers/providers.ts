@@ -1,9 +1,11 @@
-import { Cognito } from './aws.cognito';
-import { DynamoDB } from './aws.dynamodb';
-import { User } from './user';
+import { Api } from './api/api';
+import { Items } from '../mocks/providers/items';
+import { Settings } from './settings/settings';
+import { User } from './user/user';
 
 export {
-  Cognito,
-  DynamoDB,
-  User
+    Api,
+    Items,
+    Settings,
+    User
 };
