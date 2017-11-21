@@ -8,6 +8,8 @@ import { IonicStorageModule, Storage } from '@ionic/storage';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
+import { ChartModule } from 'angular2-highcharts';
+import * as highstock from 'Highcharts/highstock';
 
 import { Items } from '../mocks/providers/items';
 import { Settings } from '../providers/providers';
@@ -51,6 +53,7 @@ export function provideSettings(storage: Storage) {
       }
     }),
     IonicModule.forRoot(MyApp),
+    ChartModule.forRoot(highstock),
     IonicStorageModule.forRoot()
   ],
   bootstrap: [IonicApp],
