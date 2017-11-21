@@ -6,16 +6,16 @@ import { Items } from '../../providers/providers';
 import { HttpClient } from '@angular/common/http';
 import coinList from '../../mocks/data/coinItemsList.mock';
 
-declare var io;
+// declare var io;
 
-interface Coin {
-  Id: string;
-  ImageUrl: string;
-  Name: string;
-  CoinName: string;
-  FullName: string;
-  SortOrder: string;
-}
+// interface Coin {
+//   Id: string;
+//   ImageUrl: string;
+//   Name: string;
+//   CoinName: string;
+//   FullName: string;
+//   SortOrder: string;
+// }
 
 @IonicPage()
 @Component({
@@ -30,6 +30,7 @@ export class ListMasterPage {
   baseImageUrl: string = 'https://www.cryptocompare.com';
   pricesList: any;
   socket_url = 'wss://streamer.cryptocompare.com/';
+  priceForBTC: any;
 
   constructor(
     public navCtrl: NavController,
@@ -58,23 +59,34 @@ export class ListMasterPage {
       }
     });
     this.getPrices(symbolArray.join(','));
+    this.getPriceForBTC();
+  }
+
+  getPriceForBTC() {
+    const urlForBTC = `https://min-api.cryptocompare.com/data/pricemultifull?fsyms=BTC&tsyms=USD`;
+    this.http.get(urlForBTC).subscribe((result: any) => {
+      this.priceForBTC = result.DISPLAY;
+    });
   }
 
   getPrices(symbols: string) {
-    const url = `https://min-api.cryptocompare.com/data/pricemultifull?fsyms=${symbols}&tsyms=USD`;
+    const url = `https://min-api.cryptocompare.com/data/pricemultifull?fsyms=${symbols}&tsyms=BTC`;
     this.http.get(url).subscribe((result: any) => {
-      console.log(result);
       this.pricesList = result.DISPLAY;
       this.coinItems = this.allowedCoinItems;
     });
   }
 
   showPrice(symbol: string) {
-    return this.pricesList[symbol].USD.PRICE;
+    if (this.priceForBTC) {
+      return symbol === 'BTC' ? this.priceForBTC[symbol].USD.PRICE : this.pricesList[symbol].BTC.PRICE;
+    }
   }
 
   getChange(symbol: string) {
-    return this.pricesList[symbol].USD.CHANGEPCT24HOUR;
+    if(this.priceForBTC) {
+      return symbol === 'BTC' ? this.priceForBTC[symbol].USD.CHANGEPCT24HOUR : this.pricesList[symbol].BTC.CHANGEPCT24HOUR;
+    }
   }
 
   /**
