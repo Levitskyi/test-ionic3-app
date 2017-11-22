@@ -28,13 +28,13 @@ export class ItemDetailPage {
     this.item = navParams.get('item') || items.defaultItem;
     console.log(this.item);
 
-    const url = 'https://min-api.cryptocompare.com/data/histoday?fsym=BTC&tsym=USD&limit=60';
+    const url = 'https://min-api.cryptocompare.com/data/histoday?fsym=BTC&tsym=USD&limit=1000';
     const url_1 = 'https://min-api.cryptocompare.com/data/histoday?fsym=ETH&tsym=USD&limit=60&aggregate=3&e=Kraken&extraParams=Ionic-StockCurrency-App';
     this.http.get(url).subscribe((result: any) => {
       console.log(result);
       const dataArr = result.Data.map(elem => {
         const newArr = [];
-        newArr[0] = elem.time;
+        newArr[0] = elem.time*1000;
         newArr[1] = elem.open;
         newArr[2] = elem.high;
         newArr[3] = elem.low;
@@ -51,6 +51,9 @@ export class ItemDetailPage {
       console.log(dataArrVolume);
       console.log(dataArr);
       this.chartOptions = {
+        chart: {
+          width: 300
+        },
         rangeSelector: {
           selected: 1
         },
