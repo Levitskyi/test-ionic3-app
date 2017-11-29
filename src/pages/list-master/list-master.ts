@@ -2,7 +2,8 @@ import { Component } from '@angular/core';
 import { IonicPage, ModalController, NavController } from 'ionic-angular';
 
 import { Item } from '../../models/item';
-import { Items } from '../../providers/providers';
+// import { Items } from '../../providers/providers';
+import { FavoritesProvider } from '../../providers/providers';
 import { HttpClient } from '@angular/common/http';
 import coinList from '../../mocks/data/coinItemsList.mock';
 
@@ -31,19 +32,33 @@ export class ListMasterPage {
   pricesList: any;
   socket_url = 'wss://streamer.cryptocompare.com/';
   priceForBTC: any;
+  favorites = [];
+  notifications = [];
 
   constructor(
     public navCtrl: NavController,
-    public items: Items,
     public modalCtrl: ModalController,
     private http: HttpClient,
+    private favoritesProvider: FavoritesProvider
     ) {
-    this.currentItems = this.items.query();
+    // this.currentItems = this.items.query();
     // const socket = io.connect(this.socket_url);
     // var subscription = ['5~CCCAGG~BTC~USD', '5~CCCAGG~ETH~USD'];
     // socket.emit('SubAdd', { subs: subscription });
     // socket.on("m", function(message) {
     //   console.log(message);
+    // });
+    this.favoritesProvider.itemsSource$.subscribe(items => {
+        console.log(items);
+        this.favorites = items && items.FAVOR_LIST ? items.FAVOR_LIST : [];
+        this.notifications = items && items.NOTIFY_LIST ? items.NOTIFY_LIST : [];
+    });
+
+    // this.favoritesProvider.load().then((value: any) => {
+    //   if(value.FAVOR_LIST && value.FAVOR_LIST.length) {
+    //     this.favorites = value.FAVOR_LIST;
+    //   }
+    //   console.log(value);
     // });
   }
 
@@ -94,20 +109,50 @@ export class ListMasterPage {
    * modal and then adds the new item to our data source if the user created one.
    */
   addItem() {
-    let addModal = this.modalCtrl.create('ItemCreatePage');
-    addModal.onDidDismiss(item => {
-      if (item) {
-        this.items.add(item);
-      }
-    })
-    addModal.present();
+    // let addModal = this.modalCtrl.create('ItemCreatePage');
+    // addModal.onDidDismiss(item => {
+    //   if (item) {
+    //     this.items.add(item);
+    //   }
+    // })
+    // addModal.present();
   }
 
   /**
    * Delete an item from the list of items.
    */
-  deleteItem(item) {
-    this.items.delete(item);
+  addToList(key, item) {
+    if(!this.checkList(key, item)) {
+      this.favoritesProvider.addToList(key, item);
+    } else {
+      this.favoritesProvider.removeFromList(key, item);
+    }
+  }
+
+  checkList(key, item) {
+    let checkBool = false;
+    switch(key) {
+      case 'FAVOR_LIST': {
+        if(this.favorites.length) {
+          this.favorites.forEach(elem => {
+            if(elem.Id === item.Id) {
+              checkBool = true;
+            }
+          })
+        }
+        break;
+      }
+      case 'NOTIFY_LIST': {
+        if(this.notifications.length) {
+          this.notifications.forEach(elem => {
+            if(elem.Id === item.Id) {
+              checkBool = true;
+            }
+          })
+        }
+      }
+    }
+    return checkBool;
   }
 
   /**

@@ -1,7 +1,10 @@
 <ion-header>
 
   <ion-navbar>
-    <ion-title>{{ 'LIST_MASTER_TITLE' | translate }}</ion-title>
+    <button ion-button menuToggle icon-only>
+      <ion-icon name='menu'></ion-icon>
+    </button>
+    <!-- <ion-title>{{ 'LIST_MASTER_TITLE' | translate }}</ion-title> -->
 
     <ion-buttons end>
       <button ion-button icon-only (click)="addItem()">
@@ -32,8 +35,11 @@
       </ion-item>
 
       <ion-item-options>
-        <button ion-button color="danger" (click)="deleteItem(item)">
-          {{ 'DELETE_BUTTON' | translate }}
+        <button class="slided-button" ion-button color="primary" [class.added]="checkList('FAVOR_LIST', item)" (click)="addToList('FAVOR_LIST', item)">
+          <ion-icon name="star"></ion-icon>
+        </button>
+        <button class="slided-button" ion-button color="secondary" [class.added]="checkList('NOTIFY_LIST', item)" (click)="addToList('NOTIFY_LIST', item)">
+          <ion-icon name="notifications"></ion-icon>
         </button>
       </ion-item-options>
     </ion-item-sliding>

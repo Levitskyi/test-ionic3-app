@@ -10,4 +10,15 @@ page-list-master {
   .note {
     width: 30%;
   }
+ ion-item-options {
+    .slided-button {
+        &.added {
+          color: #ff0000;
+        }
+        ion-icon.icon {
+          padding: 0 10px !important;
+          font-size: 30px;
+        }
+      }
+    }
 }
