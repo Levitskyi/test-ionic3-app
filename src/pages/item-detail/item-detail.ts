@@ -19,7 +19,7 @@ export class ItemDetailPage {
   ], [
     'month',
     [1, 2, 3, 4, 6]
-  ]]
+  ]];
 
   constructor(
     public navCtrl: NavController, navParams: NavParams, items: Items,
@@ -28,7 +28,7 @@ export class ItemDetailPage {
     this.item = navParams.get('item') || items.defaultItem;
     console.log(this.item);
 
-    const url = 'https://min-api.cryptocompare.com/data/histoday?fsym=BTC&tsym=USD&limit=1000';
+    const url = 'https://min-api.cryptocompare.com/data/histominute?fsym=BTC&tsym=USD&limit=1500';
     const url_1 = 'https://min-api.cryptocompare.com/data/histoday?fsym=ETH&tsym=USD&limit=60&aggregate=3&e=Kraken&extraParams=Ionic-StockCurrency-App';
     this.http.get(url).subscribe((result: any) => {
       console.log(result);
@@ -52,26 +52,61 @@ export class ItemDetailPage {
       console.log(dataArr);
       this.chartOptions = {
         chart: {
-          width: 300
+          width: 300,
+          type: 'candlestick',
+          zoomType: 'x'
         },
         rangeSelector: {
-          selected: 1
+          buttons: [{
+            type: 'hour',
+            count: 1,
+            text: '1h'
+          }, {
+            type: 'day',
+            count: 1,
+            text: '1d'
+          },
+          {
+            type: 'month',
+            count: 1,
+            text: '1m'
+          }, {
+            type: 'year',
+            count: 1,
+            text: '1y'
+          }, {
+            type: 'all',
+            text: 'All'
+          }],
+          inputEnabled: false, // it supports only days
+          selected: 2 // all
+        },
+        xAxis: {
+          events: {
+            afterSetExtremes: this.afterSetExtremes
+          },
+          minRange: 3600 * 1000 // one hour
+        },
+
+        yAxis: {
+          floor: 0
         },
 
         title: {
           text: 'AAPL Stock Price'
         },
-
         series: [{
-          name: 'AAPL',
           data: dataArr,
           tooltip: {
             valueDecimals: 2
           }
         }]
       }
-      //
+
       // this.chartOptions = {
+      //   chart: {
+      //     width: 400
+      //   },
       //   rangeSelector: {
       //     selected: 1
       //   },
@@ -131,6 +166,10 @@ export class ItemDetailPage {
     });
 
 
+  }
+
+  afterSetExtremes(e) {
+    console.log(e);
   }
 
 }
