@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component, ViewChild} from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 
 import { Items } from '../../providers/providers';
@@ -13,50 +13,28 @@ export class ItemDetailPage {
   baseImageUrl = 'https://www.cryptocompare.com';
   item: any;
   chartOptions: any;
-  groupingUnits = [[
-    'week',                         // unit name
-    [1]                             // allowed multiples
-  ], [
-    'month',
-    [1, 2, 3, 4, 6]
-  ]];
+  chart: any;
+  chartData = [];
 
   constructor(
     public navCtrl: NavController, navParams: NavParams, items: Items,
-    private http: HttpClient
+    public http: HttpClient
   ) {
     this.item = navParams.get('item') || items.defaultItem;
     console.log(this.item);
 
-    const url = 'https://min-api.cryptocompare.com/data/histominute?fsym=BTC&tsym=USD&limit=1500';
+    const url = 'https://min-api.cryptocompare.com/data/histominute?fsym=BTC&tsym=USD&limit=62';
     const url_1 = 'https://min-api.cryptocompare.com/data/histoday?fsym=ETH&tsym=USD&limit=60&aggregate=3&e=Kraken&extraParams=Ionic-StockCurrency-App';
     this.http.get(url).subscribe((result: any) => {
-      console.log(result);
-      const dataArr = result.Data.map(elem => {
-        const newArr = [];
-        newArr[0] = elem.time*1000;
-        newArr[1] = elem.open;
-        newArr[2] = elem.high;
-        newArr[3] = elem.low;
-        newArr[4] = elem.close;
-        return newArr;
-      });
-      const dataArrVolume = result.Data.map(elem => {
-        const newArr = [];
-        newArr[0] = elem.time;
-        newArr[1] = elem.volumeto;
-        return newArr;
-      });
-
-      console.log(dataArrVolume);
-      console.log(dataArr);
+      const dataArr = this.generateChartData(result);
       this.chartOptions = {
         chart: {
-          width: 300,
+          width: window.innerWidth,
           type: 'candlestick',
           zoomType: 'x'
         },
         rangeSelector: {
+          allButtonsEnabled: true,
           buttons: [{
             type: 'hour',
             count: 1,
@@ -79,19 +57,21 @@ export class ItemDetailPage {
             text: 'All'
           }],
           inputEnabled: false, // it supports only days
-          selected: 2 // all
+          selected: 0 // all
         },
         xAxis: {
-          events: {
-            afterSetExtremes: this.afterSetExtremes
-          },
           minRange: 3600 * 1000 // one hour
         },
 
         yAxis: {
           floor: 0
         },
-
+        navigator: {
+          enabled: false
+        },
+        scrollbar: {
+          enabled: false
+        },
         title: {
           text: 'AAPL Stock Price'
         },
@@ -169,7 +149,79 @@ export class ItemDetailPage {
   }
 
   afterSetExtremes(e) {
-    console.log(e);
+    // console.log(e.rangeSelectorButton.type);
+
+    // const url = 'https://min-api.cryptocompare.com/data/histominute?fsym=BTC&tsym=USD&limit=1444';
+    // this.http.get(url).subscribe((result: any) => {
+    //   const dataArr = result.Data.map(elem => {
+    //     const newArr = [];
+    //     newArr[0] = elem.time*1000;
+    //     newArr[1] = elem.open;
+    //     newArr[2] = elem.high;
+    //     newArr[3] = elem.low;
+    //     newArr[4] = elem.close;
+    //     return newArr;
+    //   });
+    //   this.chartData = dataArr;
+    // });
+    // chart.showLoading('Loading data from server...');
+  }
+
+  onAfterSetExtremesX(e) {
+    if(e.originalEvent.rangeSelectorButton) {
+      console.log(e);
+      switch (e.originalEvent.rangeSelectorButton.type) {
+        case 'day': {
+          this.chart.showLoading('Loading data from server...');
+          const url = 'https://min-api.cryptocompare.com/data/histominute?fsym=BTC&tsym=USD&limit=1444';
+          this.http.get(url).subscribe((result: any) => {
+            const chartData = this.generateChartData(result);
+            this.chart.series[0].setData(chartData);
+            this.chart.hideLoading();
+          });
+          break;
+        }
+        case 'month': {
+          console.log('month');
+          this.chart.showLoading('Loading data from server...');
+          const url = 'https://min-api.cryptocompare.com/data/histohour?fsym=BTC&tsym=USD&limit=750';
+          this.http.get(url).subscribe((result: any) => {
+            const chartData = this.generateChartData(result);
+            this.chart.series[0].setData(chartData);
+            this.chart.hideLoading();
+          });
+          break;
+        }
+        case 'year': {
+          console.log('year');
+        }
+      }
+    }
+  }
+
+  saveInstance(chartInstance) {
+    this.chart = chartInstance;
+  }
+
+  generateChartData(items) {
+    return items.Data.map(elem => {
+      const newArr = [];
+      newArr[0] = elem.time*1000;
+      newArr[1] = elem.open;
+      newArr[2] = elem.high;
+      newArr[3] = elem.low;
+      newArr[4] = elem.close;
+      return newArr;
+    });
+  }
+
+  generateVolumeData(items) {
+    return items.Data.map(elem => {
+      const newArr = [];
+      newArr[0] = elem.time;
+      newArr[1] = elem.volumeto;
+      return newArr;
+    });
   }
 
 }
