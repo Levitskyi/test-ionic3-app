@@ -15,5 +15,7 @@
     <!--<h2>{{item.FullName}}</h2>-->
     <!--<p>{{item.Name}}</p>-->
   <!--</div>-->
-  <chart [type]="'StockChart'" [options]="chartOptions" ></chart>
+  <chart #highChart [type]="'StockChart'" [options]="chartOptions" (load)="saveInstance($event.context)">
+    <xAxis (afterSetExtremes)="onAfterSetExtremesX($event)"></xAxis>
+  </chart>
 </ion-content>

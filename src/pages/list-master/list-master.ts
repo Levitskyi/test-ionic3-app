@@ -34,6 +34,8 @@ export class ListMasterPage {
   priceForBTC: any;
   favorites = [];
   notifications = [];
+  searchInput: string;
+  searchedItems = [];
 
   constructor(
     public navCtrl: NavController,
@@ -68,13 +70,13 @@ export class ListMasterPage {
   ionViewDidLoad() {
     const symbolArray = [];
     coinList.forEach((elem, index) => {
-      if(index < 15) {
+      if(index < 20) {
         symbolArray.push(elem.Symbol);
         this.allowedCoinItems.push(elem);
       }
     });
     this.getPrices(symbolArray.join(','));
-    this.getPriceForBTC();
+    // this.getPriceForBTC();
   }
 
   getPriceForBTC() {
@@ -85,23 +87,28 @@ export class ListMasterPage {
   }
 
   getPrices(symbols: string) {
-    const url = `https://min-api.cryptocompare.com/data/pricemultifull?fsyms=${symbols}&tsyms=BTC`;
+    const url = `https://min-api.cryptocompare.com/data/pricemultifull?fsyms=${symbols}&tsyms=BTC,USD`;
     this.http.get(url).subscribe((result: any) => {
       this.pricesList = result.DISPLAY;
+      console.log(this.pricesList);
       this.coinItems = this.allowedCoinItems;
     });
   }
 
   showPrice(symbol: string) {
-    if (this.priceForBTC) {
-      return symbol === 'BTC' ? this.priceForBTC[symbol].USD.PRICE : this.pricesList[symbol].BTC.PRICE;
-    }
+    return this.pricesList[symbol].USD.PRICE;
+  }
+
+  showPriceOnBTC(symbol: string) {
+    return this.pricesList[symbol].BTC.PRICE;
   }
 
   getChange(symbol: string) {
-    if(this.priceForBTC) {
-      return symbol === 'BTC' ? this.priceForBTC[symbol].USD.CHANGEPCT24HOUR : this.pricesList[symbol].BTC.CHANGEPCT24HOUR;
-    }
+    return this.pricesList[symbol].USD.CHANGEPCT24HOUR;
+  }
+
+  getChangeOnBTC(symbol: string) {
+    return this.pricesList[symbol].BTC.CHANGEPCT24HOUR;
   }
 
   /**
@@ -116,6 +123,15 @@ export class ListMasterPage {
     //   }
     // })
     // addModal.present();
+  }
+
+  getItems(ev) {
+    if (this.searchInput.trim()) {
+      const data = coinList.filter(elem => {
+        return elem.FullName.toLocaleLowerCase().includes(this.searchInput.toLocaleLowerCase());
+      });
+      this.searchedItems = data.slice(0, 5);
+    }
   }
 
   /**

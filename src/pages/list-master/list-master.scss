@@ -9,6 +9,13 @@ page-list-master {
   }
   .note {
     width: 30%;
+    margin: 2px;
+  }
+  .item {
+    padding-left: 8px;
+    ion-avatar[item-start] {
+      margin-right: 8px;
+    }
   }
  ion-item-options {
     .slided-button {

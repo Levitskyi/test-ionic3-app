@@ -6,6 +6,7 @@
     </button>
     <!-- <ion-title>{{ 'LIST_MASTER_TITLE' | translate }}</ion-title> -->
 
+    <ion-searchbar (ionInput)="getItems($event)" [(ngModel)]="searchInput" placeholder="{{ 'SEARCH_PLACEHOLDER' | translate }}"></ion-searchbar>
     <ion-buttons end>
       <button ion-button icon-only (click)="addItem()">
         <ion-icon name="add"></ion-icon>
@@ -16,9 +17,30 @@
 </ion-header>
 
 <ion-content>
-  <pre>{{messages | json}}</pre>
-
-  <ion-list *ngIf="pricesList">
+  <div *ngIf="(searchInput && searchInput.trim()) && !(searchedItems && searchedItems.length)">
+    No searched items!
+  </div>
+  <ion-list *ngIf="searchInput && searchInput.trim()">
+    <ion-item-sliding *ngFor="let item of searchedItems">
+      <ion-item ion-item (click)="openItem(item)">
+        <ion-avatar item-start>
+          <img [src]="baseImageUrl + item.ImageUrl" />
+        </ion-avatar>
+        <h2>{{item.Name}}</h2>
+        <p>{{item.FullName}}</p>
+      </ion-item>
+      <ion-item-options>
+        <button class="slided-button" ion-button color="primary" [class.added]="checkList('FAVOR_LIST', item)" (click)="addToList('FAVOR_LIST', item)">
+          <ion-icon name="star"></ion-icon>
+        </button>
+        <button class="slided-button" ion-button color="secondary" [class.added]="checkList('NOTIFY_LIST', item)" (click)="addToList('NOTIFY_LIST', item)">
+          <ion-icon name="notifications"></ion-icon>
+        </button>
+      </ion-item-options>
+    </ion-item-sliding>
+  </ion-list>
+  <!-- / Main Coin List -->
+  <ion-list *ngIf="pricesList && (!searchInput || !(searchInput && searchInput.trim()))">
     <ion-item-sliding *ngFor="let item of coinItems">
       <ion-item ion-item (click)="openItem(item)">
         <ion-avatar item-start>
@@ -30,6 +52,12 @@
           <p>{{showPrice(item.Symbol)}}</p>
           <p class="note-gather" [ngClass]="{'up': getChange(item.Symbol) > 0, 'down': getChange(item.Symbol) < 0}">
             {{getChange(item.Symbol) + '%'}}
+          </p>
+        </ion-note>
+        <ion-note item-end class="ion-note-styled" *ngIf="item.Symbol !== 'BTC'">
+          <p>{{showPriceOnBTC(item.Symbol)}}</p>
+          <p class="note-gather" [ngClass]="{'up': getChangeOnBTC(item.Symbol) > 0, 'down': getChangeOnBTC(item.Symbol) < 0}">
+            {{getChangeOnBTC(item.Symbol) + '%'}}
           </p>
         </ion-note>
       </ion-item>
@@ -44,4 +72,5 @@
       </ion-item-options>
     </ion-item-sliding>
   </ion-list>
+  <!-- Main Coin List / -->
 </ion-content>

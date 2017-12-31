@@ -44,5 +44,6 @@
 
   "CARDS_TITLE": "Социальный",
 
-  "SEARCH_TITLE": "Поиск"
+  "SEARCH_TITLE": "Поиск",
+  "SEARCH_PLACEHOLDER": "Набирайте например: ripple"
 }
