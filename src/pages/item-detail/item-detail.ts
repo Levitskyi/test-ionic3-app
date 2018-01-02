@@ -15,6 +15,8 @@ export class ItemDetailPage {
   chartOptions: any;
   chart: any;
   chartData = [];
+  generalInfo: any;
+  tabs = 'description';
 
   constructor(
     public navCtrl: NavController, navParams: NavParams, items: Items,
@@ -22,7 +24,11 @@ export class ItemDetailPage {
   ) {
     this.item = navParams.get('item') || items.defaultItem;
     console.log(this.item);
+    this.getGeneralInfo(+this.item.Id);
+    this.getChartDat();
+  }
 
+  getChartDat() {
     const url = 'https://min-api.cryptocompare.com/data/histominute?fsym=BTC&tsym=USD&limit=62';
     const url_1 = 'https://min-api.cryptocompare.com/data/histoday?fsym=ETH&tsym=USD&limit=60&aggregate=3&e=Kraken&extraParams=Ionic-StockCurrency-App';
     this.http.get(url).subscribe((result: any) => {
@@ -44,18 +50,18 @@ export class ItemDetailPage {
             count: 1,
             text: '1d'
           },
-          {
-            type: 'month',
-            count: 1,
-            text: '1m'
-          }, {
-            type: 'year',
-            count: 1,
-            text: '1y'
-          }, {
-            type: 'all',
-            text: 'All'
-          }],
+            {
+              type: 'month',
+              count: 1,
+              text: '1m'
+            }, {
+              type: 'year',
+              count: 1,
+              text: '1y'
+            }, {
+              type: 'all',
+              text: 'All'
+            }],
           inputEnabled: false, // it supports only days
           selected: 0 // all
         },
@@ -71,9 +77,6 @@ export class ItemDetailPage {
         },
         scrollbar: {
           enabled: false
-        },
-        title: {
-          text: 'AAPL Stock Price'
         },
         series: [{
           data: dataArr,
@@ -221,6 +224,13 @@ export class ItemDetailPage {
       newArr[0] = elem.time;
       newArr[1] = elem.volumeto;
       return newArr;
+    });
+  }
+
+  getGeneralInfo(id) {
+    this.http.get('https://www.cryptocompare.com/api/data/coinsnapshotfullbyid/?id=' + id).subscribe((result: any) => {
+      console.log(result);
+      this.generalInfo = result.Data.General;
     });
   }
 

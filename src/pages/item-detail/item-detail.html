@@ -1,7 +1,7 @@
 <ion-header>
 
   <ion-navbar>
-    <ion-title>{{ item.name }}</ion-title>
+    <ion-title>{{ item.FullName }}</ion-title>
   </ion-navbar>
 
 </ion-header>
@@ -15,7 +15,126 @@
     <!--<h2>{{item.FullName}}</h2>-->
     <!--<p>{{item.Name}}</p>-->
   <!--</div>-->
+  <ion-list margin-bottom="0">
+    <ion-item>
+      <ion-avatar item-start>
+        <img [src]="baseImageUrl + item.ImageUrl" />
+      </ion-avatar>
+      <h2>{{item.FullName}}</h2>
+    </ion-item>
+  </ion-list>
   <chart #highChart [type]="'StockChart'" [options]="chartOptions" (load)="saveInstance($event.context)">
     <xAxis (afterSetExtremes)="onAfterSetExtremesX($event)"></xAxis>
   </chart>
+
+  <ion-grid>
+    <ion-row>
+      <ion-col>
+        <div>
+          <strong>Max Supply:</strong><br>
+          {{generalInfo?.TotalCoinSupply | number}}
+        </div>
+      </ion-col>
+      <ion-col>
+        <div>
+          <strong>Difficulty Adjustment:</strong><br>
+          {{generalInfo?.DifficultyAdjustment || '-'}}
+        </div>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>
+        <div>
+          <strong>Algorithm:</strong><br>
+          {{generalInfo?.Algorithm || '-'}}
+        </div>
+      </ion-col>
+      <ion-col>
+        <div>
+          <strong>Block Rew.Red:</strong><br>
+          {{generalInfo?.BlockRewardReduction || '-'}}
+        </div>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>
+        <div>
+          <strong>Proof Type:</strong><br>
+          {{generalInfo?.ProofType || '-'}}
+        </div>
+      </ion-col>
+      <ion-col>
+        <div>
+          <strong>Block Number:</strong><br>
+          {{generalInfo?.BlockNumber | number}}
+        </div>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>
+        <div>
+          <strong>Start Date:</strong><br>
+          {{generalInfo?.StartDate || '-'}}
+        </div>
+      </ion-col>
+      <ion-col>
+        <div>
+          <strong>Network H/s:</strong><br>
+          {{generalInfo?.NetHashesPerSecond | number}}
+        </div>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>
+        <div>
+          <strong>Twitter:</strong><br>
+          {{generalInfo?.Twitter || '-'}}
+        </div>
+      </ion-col>
+      <ion-col>
+        <div>
+          <strong>Current Supply:</strong><br>
+          {{generalInfo?.TotalCoinsMined | number}}
+        </div>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>
+        <div>
+          <strong>Website:</strong><br>
+          <span [innerHTML]="generalInfo?.Website || '-'"></span>
+        </div>
+      </ion-col>
+      <ion-col>
+        <div>
+          <strong>Block Reward:</strong><br>
+          {{generalInfo?.BlockReward | number}}
+        </div>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <ion-segment padding-horizontal [(ngModel)]="tabs" color="primary">
+    <ion-segment-button value="description">
+      Description
+    </ion-segment-button>
+    <ion-segment-button value="features">
+      Features
+    </ion-segment-button>
+    <ion-segment-button value="technology">
+      Technology
+    </ion-segment-button>
+  </ion-segment>
+  <ion-card>
+    <ion-card-content *ngIf="tabs === 'description'">
+      <div [innerHTML]="generalInfo?.Description"></div>
+    </ion-card-content>
+    <ion-card-content *ngIf="tabs === 'features'">
+      <div [innerHTML]="generalInfo?.Features"></div>
+    </ion-card-content>
+    <ion-card-content *ngIf="tabs === 'technology'">
+      <div [innerHTML]="generalInfo?.Technology"></div>
+    </ion-card-content>
+  </ion-card>
+
 </ion-content>
